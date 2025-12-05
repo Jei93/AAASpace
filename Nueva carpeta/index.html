@@ -1,0 +1,2174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galactic Empire: Cosmic Conquest MMO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: #000;
+            color: #e0e0e0;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        /* Cinematic Background */
+        .space-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('hero-cinematic.png') center/cover;
+            z-index: -2;
+        }
+
+        .space-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(0, 20, 40, 0.4) 0%, rgba(0, 0, 0, 0.9) 100%);
+            z-index: -1;
+        }
+
+        /* Animated Stars */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+
+        /* Login/Register Screen */
+        .auth-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            backdrop-filter: blur(10px);
+        }
+
+        .auth-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .auth-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .auth-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .auth-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #00ffff, #0066cc);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .auth-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.4);
+        }
+
+        .auth-switch {
+            color: #00ffff;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header with Player Info */
+        .header {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+
+        .game-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease-in-out infinite;
+            text-align: center;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 15px;
+        }
+
+        .player-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .player-details {
+            flex: 1;
+        }
+
+        .player-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .player-level {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .logout-btn {
+            background: rgba(255, 0, 0, 0.3);
+            border: 1px solid rgba(255, 0, 0, 0.5);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 0, 0, 0.5);
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 10px;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-tab.active {
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .nav-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        /* Game Content Areas */
+        .game-content {
+            display: none;
+        }
+
+        .game-content.active {
+            display: block;
+        }
+
+        /* Empire View */
+        .empire-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .stat-item:hover::before {
+            left: 100%;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.3);
+        }
+
+        .stat-icon {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Battle System */
+        .battle-arena {
+            display: grid;
+            grid-template-columns: 1fr 300px 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            min-height: 400px;
+        }
+
+        .battle-player {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .battle-enemy {
+            background: rgba(255, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .battle-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .battle-button {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, #ff4500, #dc143c);
+            border: 3px solid #ff4500;
+            box-shadow: 0 0 30px rgba(255, 69, 0, 0.6);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .battle-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 50px rgba(255, 69, 0, 0.8);
+        }
+
+        .battle-button:active {
+            transform: scale(0.95);
+        }
+
+        .battle-log {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        /* Fleet Management */
+        .fleet-composition {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .fleet-unit {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .fleet-unit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.3);
+        }
+
+        .unit-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .unit-name {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .unit-stats {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+
+        .unit-count {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .unit-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(0, 255, 255, 0.3);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .unit-btn:hover {
+            background: rgba(0, 255, 255, 0.5);
+        }
+
+        .unit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Alliance System */
+        .alliance-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .alliance-members {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .alliance-chat {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: white;
+        }
+
+        .chat-send {
+            padding: 10px 20px;
+            background: linear-gradient(45deg, #00ffff, #0066cc);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Ranking System */
+        .ranking-table {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .ranking-header {
+            background: rgba(0, 255, 255, 0.2);
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 50px 1fr 100px 100px 100px;
+            gap: 15px;
+            font-weight: bold;
+        }
+
+        .ranking-row {
+            padding: 15px 20px;
+            display: grid;
+            grid-template-columns: 50px 1fr 100px 100px 100px;
+            gap: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .ranking-row:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .ranking-row.player-row {
+            background: rgba(0, 255, 255, 0.1);
+            border-left: 4px solid #00ffff;
+        }
+
+        /* Resources and Upgrades */
+        .resources-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .resource-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .resource-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .resource-card:hover::before {
+            left: 100%;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.3);
+        }
+
+        .resource-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .energy-icon { background: linear-gradient(45deg, #9c27b0, #e91e63); }
+        .mineral-icon { background: linear-gradient(45deg, #607d8b, #9e9e9e); }
+        .crystal-icon { background: linear-gradient(45deg, #ff9800, #ffc107); }
+        .plasma-icon { background: linear-gradient(45deg, #2196f3, #00bcd4); }
+        .darkmatter-icon { background: linear-gradient(45deg, #000, #673ab7); }
+        .quantum-icon { background: linear-gradient(45deg, #4caf50, #8bc34a); }
+
+        .resource-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .resource-rate {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Main Clicker */
+        .main-clicker {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #00ffff, #0066cc, #003366);
+            border: 3px solid #00ffff;
+            box-shadow: 
+                0 0 30px rgba(0, 255, 255, 0.5),
+                inset 0 0 30px rgba(255, 255, 255, 0.1),
+                0 0 60px rgba(0, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.1s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+        }
+
+        .main-clicker:active {
+            transform: scale(0.95);
+            box-shadow: 
+                0 0 50px rgba(0, 255, 255, 0.8),
+                inset 0 0 40px rgba(255, 255, 255, 0.2),
+                0 0 100px rgba(0, 255, 255, 0.5);
+        }
+
+        .clicker-core {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            animation: corePulse 3s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        @keyframes corePulse {
+            0%, 100% { opacity: 0.4; transform: scale(0.9); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        .clicker-text {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .clicker-power {
+            font-size: 1rem;
+            opacity: 0.8;
+            color: #ffff00;
+        }
+
+        /* Upgrades Section */
+        .upgrades-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .upgrade-category {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            min-height: 300px;
+        }
+
+        .category-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #00ffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .upgrade-item {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upgrade-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .upgrade-item:hover::before {
+            left: 100%;
+        }
+
+        .upgrade-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+
+        .upgrade-item:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: rgba(255, 0, 0, 0.1);
+        }
+
+        .upgrade-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .upgrade-cost {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .upgrade-effect {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* Battle Effects */
+        .floating-number {
+            position: fixed;
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+            font-size: 1.8rem;
+            color: #00ffff;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+            pointer-events: none;
+            z-index: 1000;
+            animation: floatUp 2.5s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1) rotate(0deg);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(-50px) scale(1.3) rotate(180deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-120px) scale(0.8) rotate(360deg);
+            }
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #00ffff;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particleFloat 4s ease-out forwards;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+        }
+
+        @keyframes particleFloat {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--dx), var(--dy)) scale(0);
+            }
+        }
+
+        .combo-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ff00ff;
+            text-shadow: 0 0 30px rgba(255, 0, 255, 0.8);
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+
+        .combo-indicator.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.3);
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #4caf50, #8bc34a);
+            color: #000;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            transform: translateX(400px);
+            transition: transform 0.5s ease;
+            z-index: 1001;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.5);
+            max-width: 300px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.achievement {
+            background: linear-gradient(45deg, #ff9800, #ffc107);
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.5);
+        }
+
+        .notification.battle {
+            background: linear-gradient(45deg, #f44336, #ff5722);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.5);
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 1s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+            animation: loadingPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes loadingPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .loading-bar {
+            width: 300px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            border-radius: 2px;
+            animation: loadingProgress 3s ease-in-out infinite;
+        }
+
+        @keyframes loadingProgress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .battle-arena {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .alliance-panel {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .empire-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .fleet-composition {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-title">GALACTIC EMPIRE MMO</div>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
+        <p style="margin-top: 20px; opacity: 0.7;">Conectando al servidor galáctico...</p>
+    </div>
+
+    <!-- Auth Screen -->
+    <div class="auth-screen" id="authScreen">
+        <div class="auth-container">
+            <div class="auth-title" id="authTitle">INICIAR SESIÓN</div>
+            <input type="text" class="auth-input" id="usernameInput" placeholder="Nombre de Usuario" maxlength="20">
+            <input type="password" class="auth-input" id="passwordInput" placeholder="Contraseña" maxlength="30">
+            <button class="auth-button" id="authButton">INICIAR SESIÓN</button>
+            <div style="margin-top: 20px;">
+                <span id="authSwitchText">¿No tienes cuenta?</span>
+                <span class="auth-switch" id="authSwitch">Regístrate</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Animated Stars Background -->
+    <div class="stars" id="stars"></div>
+
+    <!-- Cinematic Background -->
+    <div class="space-bg"></div>
+    
+    <div class="container" id="mainContainer" style="display: none;">
+        <header class="header">
+            <div></div>
+            <h1 class="game-title">GALACTIC EMPIRE MMO</h1>
+            <div class="player-info" id="playerInfo">
+                <div class="player-avatar" id="playerAvatar">GE</div>
+                <div class="player-details">
+                    <div class="player-name" id="playerName">General del Espacio</div>
+                    <div class="player-level" id="playerLevel">Nivel 1 - Recruit</div>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="empire">
+                <i class="fas fa-crown"></i>
+                IMPERIO
+            </button>
+            <button class="nav-tab" data-tab="battle">
+                <i class="fas fa-sword"></i>
+                BATALLAS
+            </button>
+            <button class="nav-tab" data-tab="fleet">
+                <i class="fas fa-rocket"></i>
+                FLOTA
+            </button>
+            <button class="nav-tab" data-tab="alliance">
+                <i class="fas fa-users"></i>
+                ALIANZA
+            </button>
+            <button class="nav-tab" data-tab="ranking">
+                <i class="fas fa-trophy"></i>
+                RANKING
+            </button>
+        </div>
+
+        <!-- Empire Tab -->
+        <div class="game-content active" id="empire-tab">
+            <div class="empire-stats">
+                <div class="stat-item">
+                    <i class="fas fa-coins stat-icon" style="color: #ffff00;"></i>
+                    <div class="stat-value" id="totalWealth">0</div>
+                    <div class="stat-label">Riqueza Total</div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-users stat-icon" style="color: #00ffff;"></i>
+                    <div class="stat-value" id="population">0</div>
+                    <div class="stat-label">Población</div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-rocket stat-icon" style="color: #ff00ff;"></i>
+                    <div class="stat-value" id="fleetPower">0</div>
+                    <div class="stat-label">Poder de Flota</div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-flask stat-icon" style="color: #4caf50;"></i>
+                    <div class="stat-value" id="research">0</div>
+                    <div class="stat-label">Investigación</div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-crown stat-icon" style="color: #ffc107;"></i>
+                    <div class="stat-value" id="prestige">0</div>
+                    <div class="stat-label">Prestigio</div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-infinity stat-icon" style="color: #e91e63;"></i>
+                    <div class="stat-value" id="infinity">0</div>
+                    <div class="stat-label">Energía Infinita</div>
+                </div>
+            </div>
+
+            <div class="resources-panel">
+                <div class="resource-card">
+                    <div class="resource-icon energy-icon">⚡</div>
+                    <div class="resource-amount" id="energy">0</div>
+                    <div class="resource-rate" id="energy-rate">0/s</div>
+                </div>
+                <div class="resource-card">
+                    <div class="resource-icon mineral-icon">🪨</div>
+                    <div class="resource-amount" id="minerals">0</div>
+                    <div class="resource-rate" id="minerals-rate">0/s</div>
+                </div>
+                <div class="resource-card">
+                    <div class="resource-icon crystal-icon">💎</div>
+                    <div class="resource-amount" id="crystals">0</div>
+                    <div class="resource-rate" id="crystals-rate">0/s</div>
+                </div>
+                <div class="resource-card">
+                    <div class="resource-icon plasma-icon">🔥</div>
+                    <div class="resource-amount" id="plasma">0</div>
+                    <div class="resource-rate" id="plasma-rate">0/s</div>
+                </div>
+                <div class="resource-card">
+                    <div class="resource-icon darkmatter-icon">🌌</div>
+                    <div class="resource-amount" id="darkMatter">0</div>
+                    <div class="resource-rate" id="darkMatter-rate">0/s</div>
+                </div>
+                <div class="resource-card">
+                    <div class="resource-icon quantum-icon">⚛️</div>
+                    <div class="resource-amount" id="quantum">0</div>
+                    <div class="resource-rate" id="quantum-rate">0/s</div>
+                </div>
+            </div>
+
+            <div class="main-clicker" id="mainClicker">
+                <div class="clicker-core">
+                    <div class="clicker-text">MINAR</div>
+                    <div class="clicker-text">RECURSOS</div>
+                    <div class="clicker-power" id="clickPower">+1</div>
+                </div>
+            </div>
+
+            <div class="upgrades-section">
+                <div class="upgrade-category">
+                    <div class="category-title">
+                        <i class="fas fa-cogs"></i>
+                        INFRAESTRUCTURA
+                    </div>
+                    <div class="upgrade-item" id="buy-miner">
+                        <div class="upgrade-name">Minero Cuántico</div>
+                        <div class="upgrade-cost">Costo: <span id="miner-cost">10</span> ⚡</div>
+                        <div class="upgrade-effect">+1 ⚡/s por minero</div>
+                    </div>
+                    <div class="upgrade-item" id="buy-quarry">
+                        <div class="upgrade-name">Cantera Asteroidal</div>
+                        <div class="upgrade-cost">Costo: <span id="quarry-cost">50</span> ⚡</div>
+                        <div class="upgrade-effect">+3 🪨/s por cantera</div>
+                    </div>
+                    <div class="upgrade-item" id="buy-crystal-farm">
+                        <div class="upgrade-name">Granja de Cristales</div>
+                        <div class="upgrade-cost">Costo: <span id="crystal-cost">200</span> ⚡</div>
+                        <div class="upgrade-effect">+2 💎/s por granja</div>
+                    </div>
+                </div>
+
+                <div class="upgrade-category">
+                    <div class="category-title">
+                        <i class="fas fa-rocket"></i>
+                        TECNOLOGÍA
+                    </div>
+                    <div class="upgrade-item" id="upgrade-click">
+                        <div class="upgrade-name">Potencia de Clic</div>
+                        <div class="upgrade-cost">Costo: <span id="click-cost">100</span> ⚡</div>
+                        <div class="upgrade-effect">+1 por clic</div>
+                    </div>
+                    <div class="upgrade-item" id="upgrade-multiplier">
+                        <div class="upgrade-name">Multiplicador Global</div>
+                        <div class="upgrade-cost">Costo: <span id="multiplier-cost">1000</span> ⚡</div>
+                        <div class="upgrade-effect">x2 todos los recursos</div>
+                    </div>
+                    <div class="upgrade-item" id="upgrade-combo">
+                        <div class="upgrade-name">Acelerador de Combo</div>
+                        <div class="upgrade-cost">Costo: <span id="combo-cost">5000</span> ⚡</div>
+                        <div class="upgrade-effect">+50% velocidad combo</div>
+                    </div>
+                </div>
+
+                <div class="upgrade-category">
+                    <div class="category-title">
+                        <i class="fas fa-atom"></i>
+                        AVANZADO
+                    </div>
+                    <div class="upgrade-item" id="buy-plasma">
+                        <div class="upgrade-name">Extractor de Plasma</div>
+                        <div class="upgrade-cost">Costo: <span id="plasma-cost">1000</span> 💎</div>
+                        <div class="upgrade-effect">+2 🔥/s por extractor</div>
+                    </div>
+                    <div class="upgrade-item" id="buy-darkmatter">
+                        <div class="upgrade-name">Colector Materia Oscura</div>
+                        <div class="upgrade-cost">Costo: <span id="darkmatter-cost">500</span> 🔥</div>
+                        <div class="upgrade-effect">+0.2 🌌/s por colector</div>
+                    </div>
+                    <div class="upgrade-item" id="buy-quantum">
+                        <div class="upgrade-name">Computadora Cuántica</div>
+                        <div class="upgrade-cost">Costo: <span id="quantum-cost">100</span> 🌌</div>
+                        <div class="upgrade-effect">+0.05 ⚛️/s por computadora</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Battle Tab -->
+        <div class="game-content" id="battle-tab">
+            <div class="battle-arena">
+                <div class="battle-player">
+                    <h3>TU FLOTA</h3>
+                    <div class="stat-item">
+                        <i class="fas fa-rocket stat-icon" style="color: #00ffff;"></i>
+                        <div class="stat-value" id="playerFleetPower">0</div>
+                        <div class="stat-label">Poder Total</div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-shield stat-icon" style="color: #4caf50;"></i>
+                        <div class="stat-value" id="playerDefense">100</div>
+                        <div class="stat-label">Defensa Base</div>
+                    </div>
+                </div>
+
+                <div class="battle-center">
+                    <div class="battle-button" id="battleButton">
+                        <i class="fas fa-sword" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <div>ATACAR</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8;">Enemigo Aleatorio</div>
+                    </div>
+                    <div class="battle-log" id="battleLog">
+                        <div>¡Bienvenido al campo de batalla!</div>
+                        <div>Entrena tu flota y ataca a otros jugadores.</div>
+                        <div>Las batallas te dan recursos y prestigio.</div>
+                    </div>
+                </div>
+
+                <div class="battle-enemy">
+                    <h3>ENEMIGO</h3>
+                    <div class="stat-item">
+                        <i class="fas fa-rocket stat-icon" style="color: #ff00ff;"></i>
+                        <div class="stat-value" id="enemyFleetPower">???</div>
+                        <div class="stat-label">Poder Enemigo</div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-trophy stat-icon" style="color: #ffc107;"></i>
+                        <div class="stat-value" id="battleRewards">0</div>
+                        <div class="stat-label">Recompensas</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fleet Tab -->
+        <div class="game-content" id="fleet-tab">
+            <div class="fleet-composition">
+                <div class="fleet-unit">
+                    <i class="fas fa-fighter-jet unit-icon" style="color: #00ffff;"></i>
+                    <div class="unit-name">Cazas Interceptores</div>
+                    <div class="unit-stats">Ataque: 10 | Velocidad: 20</div>
+                    <div class="unit-count">
+                        <button class="unit-btn" id="fighter-minus">-</button>
+                        <span id="fighter-count">0</span>
+                        <button class="unit-btn" id="fighter-plus">+</button>
+                    </div>
+                    <div style="font-size: 0.8rem; opacity: 0.7;">Costo: 100 ⚡</div>
+                </div>
+
+                <div class="fleet-unit">
+                    <i class="fas fa-space-station-moon-alt unit-icon" style="color: #ff00ff;"></i>
+                    <div class="unit-name">Cruceros de Batalla</div>
+                    <div class="unit-stats">Ataque: 50 | Vida: 100</div>
+                    <div class="unit-count">
+                        <button class="unit-btn" id="cruiser-minus">-</button>
+                        <span id="cruiser-count">0</span>
+                        <button class="unit-btn" id="cruiser-plus">+</button>
+                    </div>
+                    <div style="font-size: 0.8rem; opacity: 0.7;">Costo: 500 💎</div>
+                </div>
+
+                <div class="fleet-unit">
+                    <i class="fas fa-rocket unit-icon" style="color: #ffc107;"></i>
+                    <div class="unit-name">Bombarderos Pesados</div>
+                    <div class="unit-stats">Ataque: 100 | Defensa: 20</div>
+                    <div class="unit-count">
+                        <button class="unit-btn" id="bomber-minus">-</button>
+                        <span id="bomber-count">0</span>
+                        <button class="unit-btn" id="bomber-plus">+</button>
+                    </div>
+                    <div style="font-size: 0.8rem; opacity: 0.7;">Costo: 1000 🔥</div>
+                </div>
+
+                <div class="fleet-unit">
+                    <i class="fas fa-satellite unit-icon" style="color: #4caf50;"></i>
+                    <div class="unit-name">Satélites de Defensa</div>
+                    <div class="unit-stats">Defensa: 200 | Escudos: 50</div>
+                    <div class="unit-count">
+                        <button class="unit-btn" id="defense-minus">-</button>
+                        <span id="defense-count">0</span>
+                        <button class="unit-btn" id="defense-plus">+</button>
+                    </div>
+                    <div style="font-size: 0.8rem; opacity: 0.7;">Costo: 200 🌌</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alliance Tab -->
+        <div class="game-content" id="alliance-tab">
+            <div class="alliance-panel">
+                <div class="alliance-members">
+                    <h3>MIEMBROS DE LA ALIANZA</h3>
+                    <div style="margin-top: 20px;">
+                        <div style="padding: 10px; background: rgba(0, 255, 255, 0.1); border-radius: 8px; margin-bottom: 10px;">
+                            <strong>Tú</strong> - Líder
+                        </div>
+                        <div style="padding: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; margin-bottom: 10px;">
+                            <strong>Commander_X</strong> - Oficial
+                        </div>
+                        <div style="padding: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; margin-bottom: 10px;">
+                            <strong>SpaceMarine</strong> - Miembro
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alliance-chat">
+                    <h3>CHAT DE ALIANZA</h3>
+                    <div class="chat-messages" id="chatMessages">
+                        <div><strong>Commander_X:</strong> ¡Necesitamos más recursos!</div>
+                        <div><strong>SpaceMarine:</strong> Estoy entrenando más tropas</div>
+                        <div><strong>Tú:</strong> Preparen sus flotas para atacar</div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Escribe un mensaje...">
+                        <button class="chat-send" id="chatSend">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ranking Tab -->
+        <div class="game-content" id="ranking-tab">
+            <div class="ranking-table">
+                <div class="ranking-header">
+                    <div>#</div>
+                    <div>JUGADOR</div>
+                    <div>PODER</div>
+                    <div>VICTORIAS</div>
+                    <div>PRESTIGIO</div>
+                </div>
+                <div class="ranking-row player-row">
+                    <div>1</div>
+                    <div><strong>Tú</strong></div>
+                    <div id="playerRankingPower">0</div>
+                    <div id="playerVictories">0</div>
+                    <div id="playerRankingPrestige">0</div>
+                </div>
+                <div class="ranking-row">
+                    <div>2</div>
+                    <div>Commander_X</div>
+                    <div>15.2K</div>
+                    <div>127</div>
+                    <div>5</div>
+                </div>
+                <div class="ranking-row">
+                    <div>3</div>
+                    <div>SpaceMarine</div>
+                    <div>12.8K</div>
+                    <div>98</div>
+                    <div>3</div>
+                </div>
+                <div class="ranking-row">
+                    <div>4</div>
+                    <div>GalacticKing</div>
+                    <div>10.5K</div>
+                    <div>156</div>
+                    <div>7</div>
+                </div>
+                <div class="ranking-row">
+                    <div>5</div>
+                    <div>CosmicWarrior</div>
+                    <div>8.9K</div>
+                    <div>89</div>
+                    <div>2</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Combo Indicator -->
+    <div class="combo-indicator" id="comboIndicator">
+        ¡COMBO x<span id="comboMultiplier">1</span>!
+    </div>
+
+    <!-- Notification System -->
+    <div id="notificationContainer"></div>
+
+    <script>
+        class GalacticEmpireMMO {
+            constructor() {
+                this.isLoaded = false;
+                this.currentUser = null;
+                this.currentTab = 'empire';
+                
+                // Game Data
+                this.resources = {
+                    energy: 0,
+                    minerals: 0,
+                    crystals: 0,
+                    plasma: 0,
+                    darkMatter: 0,
+                    quantum: 0
+                };
+
+                this.generators = {
+                    miners: 0,
+                    quarries: 0,
+                    crystalFarms: 0,
+                    plasmaExtractors: 0,
+                    darkMatterCollectors: 0,
+                    quantumComputers: 0
+                };
+
+                this.upgrades = {
+                    clickPower: 1,
+                    globalMultiplier: 1,
+                    comboSpeed: 1,
+                    spaceStation: 0,
+                    laboratory: 0,
+                    shipyard: 0,
+                    quantumPortal: 0
+                };
+
+                this.fleet = {
+                    fighters: 0,
+                    cruisers: 0,
+                    bombers: 0,
+                    defenses: 0
+                };
+
+                this.empire = {
+                    population: 0,
+                    fleetPower: 0,
+                    research: 0,
+                    prestige: 0,
+                    infinity: 0,
+                    totalWealth: 0,
+                    victories: 0,
+                    level: 1
+                };
+
+                this.stats = {
+                    totalClicks: 0,
+                    bestCombo: 0,
+                    resourcesMined: 0,
+                    playTime: 0,
+                    achievements: new Set()
+                };
+
+                this.combo = {
+                    count: 0,
+                    multiplier: 1,
+                    lastClick: 0,
+                    timer: null
+                };
+
+                this.battle = {
+                    inProgress: false,
+                    enemyPower: 0,
+                    rewards: 0
+                };
+
+                this.lastUpdate = Date.now();
+                this.prestigeThreshold = 1000000;
+                
+                this.init();
+            }
+
+            init() {
+                this.createStars();
+                this.setupAuth();
+                this.setupNavigation();
+                this.setupEventListeners();
+                this.hideLoadingScreen();
+            }
+
+            createStars() {
+                const starsContainer = document.getElementById('stars');
+                for (let i = 0; i < 100; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.style.left = Math.random() * 100 + '%';
+                    star.style.top = Math.random() * 100 + '%';
+                    star.style.animationDelay = Math.random() * 3 + 's';
+                    starsContainer.appendChild(star);
+                }
+            }
+
+            setupAuth() {
+                const authScreen = document.getElementById('authScreen');
+                const authButton = document.getElementById('authButton');
+                const authSwitch = document.getElementById('authSwitch');
+                const usernameInput = document.getElementById('usernameInput');
+                const passwordInput = document.getElementById('passwordInput');
+
+                let isLogin = true;
+
+                authSwitch.addEventListener('click', () => {
+                    isLogin = !isLogin;
+                    document.getElementById('authTitle').textContent = isLogin ? 'INICIAR SESIÓN' : 'REGISTRARSE';
+                    authButton.textContent = isLogin ? 'INICIAR SESIÓN' : 'REGISTRARSE';
+                    document.getElementById('authSwitchText').textContent = isLogin ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?';
+                    authSwitch.textContent = isLogin ? 'Regístrate' : 'Inicia Sesión';
+                });
+
+                authButton.addEventListener('click', () => {
+                    const username = usernameInput.value.trim();
+                    const password = passwordInput.value.trim();
+
+                    if (username.length < 3) {
+                        this.showNotification('El nombre de usuario debe tener al menos 3 caracteres', 'warning');
+                        return;
+                    }
+
+                    if (password.length < 6) {
+                        this.showNotification('La contraseña debe tener al menos 6 caracteres', 'warning');
+                        return;
+                    }
+
+                    this.authenticate(username, password, isLogin);
+                });
+
+                // Enter key support
+                [usernameInput, passwordInput].forEach(input => {
+                    input.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            authButton.click();
+                        }
+                    });
+                });
+            }
+
+            authenticate(username, password, isLogin) {
+                // Simulate authentication
+                const users = JSON.parse(localStorage.getItem('galacticUsers') || '{}');
+                
+                if (isLogin) {
+                    if (users[username] && users[username].password === password) {
+                        this.loginUser(username, users[username]);
+                    } else {
+                        this.showNotification('Usuario o contraseña incorrectos', 'warning');
+                    }
+                } else {
+                    if (users[username]) {
+                        this.showNotification('El usuario ya existe', 'warning');
+                    } else {
+                        users[username] = {
+                            password: password,
+                            createdAt: Date.now()
+                        };
+                        localStorage.setItem('galacticUsers', JSON.stringify(users));
+                        this.loginUser(username, users[username]);
+                        this.showNotification('¡Usuario registrado exitosamente!', 'success');
+                    }
+                }
+            }
+
+            loginUser(username, userData) {
+                this.currentUser = username;
+                document.getElementById('playerName').textContent = username;
+                document.getElementById('playerAvatar').textContent = username.substring(0, 2).toUpperCase();
+                
+                // Hide auth screen and show main game
+                document.getElementById('authScreen').style.display = 'none';
+                document.getElementById('mainContainer').style.display = 'block';
+                
+                this.loadGame();
+                this.startGameLoop();
+                this.updateDisplay();
+                this.showNotification(`¡Bienvenido, ${username}!`, 'success');
+            }
+
+            setupNavigation() {
+                const tabs = document.querySelectorAll('.nav-tab');
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const tabName = tab.dataset.tab;
+                        this.switchTab(tabName);
+                    });
+                });
+
+                document.getElementById('logoutBtn').addEventListener('click', () => {
+                    this.logout();
+                });
+            }
+
+            switchTab(tabName) {
+                // Remove active class from all tabs and content
+                document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.game-content').forEach(content => content.classList.remove('active'));
+
+                // Add active class to selected tab and content
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+                
+                this.currentTab = tabName;
+            }
+
+            logout() {
+                this.saveGame();
+                this.currentUser = null;
+                document.getElementById('mainContainer').style.display = 'none';
+                document.getElementById('authScreen').style.display = 'flex';
+                document.getElementById('usernameInput').value = '';
+                document.getElementById('passwordInput').value = '';
+            }
+
+            setupEventListeners() {
+                // Main clicker
+                const clicker = document.getElementById('mainClicker');
+                clicker.addEventListener('click', (e) => this.handleClick(e));
+                clicker.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.handleClick(e);
+                });
+
+                // Battle system
+                document.getElementById('battleButton').addEventListener('click', () => this.startBattle());
+
+                // Fleet management
+                this.setupFleetControls();
+
+                // Chat system
+                document.getElementById('chatSend').addEventListener('click', () => this.sendMessage());
+                document.getElementById('chatInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.sendMessage();
+                    }
+                });
+
+                // Upgrade buttons
+                this.setupUpgradeButtons();
+            }
+
+            setupFleetControls() {
+                const units = ['fighter', 'cruiser', 'bomber', 'defense'];
+                const costs = { fighter: 100, cruiser: 500, bomber: 1000, defense: 200 };
+                const resources = { fighter: 'energy', cruiser: 'crystals', bomber: 'plasma', defense: 'darkMatter' };
+
+                units.forEach(unit => {
+                    document.getElementById(`${unit}-plus`).addEventListener('click', () => {
+                        this.buyUnit(unit, costs[unit], resources[unit]);
+                    });
+                    
+                    document.getElementById(`${unit}-minus`).addEventListener('click', () => {
+                        this.sellUnit(unit, costs[unit], resources[unit]);
+                    });
+                });
+            }
+
+            buyUnit(unit, cost, resource) {
+                if (this.resources[resource] >= cost) {
+                    this.resources[resource] -= cost;
+                    this.fleet[unit + 's']++;
+                    this.updateFleetPower();
+                    this.updateDisplay();
+                    this.showNotification(`¡${unit} comprado!`);
+                }
+            }
+
+            sellUnit(unit, cost, resource) {
+                if (this.fleet[unit + 's'] > 0) {
+                    this.fleet[unit + 's']--;
+                    this.resources[resource] += Math.floor(cost * 0.7);
+                    this.updateFleetPower();
+                    this.updateDisplay();
+                    this.showNotification(`${unit} vendido`);
+                }
+            }
+
+            updateFleetPower() {
+                const power = {
+                    fighters: 10,
+                    cruisers: 50,
+                    bombers: 100,
+                    defenses: 25
+                };
+
+                this.empire.fleetPower = 0;
+                Object.keys(this.fleet).forEach(unit => {
+                    this.empire.fleetPower += this.fleet[unit] * power[unit];
+                });
+            }
+
+            startBattle() {
+                if (this.battle.inProgress) return;
+                
+                if (this.empire.fleetPower < 100) {
+                    this.showNotification('Necesitas al menos 100 de poder de flota para atacar', 'warning');
+                    return;
+                }
+
+                this.battle.inProgress = true;
+                const enemyPower = Math.floor(Math.random() * this.empire.fleetPower * 1.5) + 50;
+                this.battle.enemyPower = enemyPower;
+
+                // Simulate battle
+                this.addToBattleLog(`¡Batalla iniciada contra enemigo con ${enemyPower} de poder!`);
+                
+                setTimeout(() => {
+                    const victory = this.empire.fleetPower > enemyPower;
+                    const resourceReward = victory ? Math.floor(enemyPower * 2) : 0;
+                    const prestigeReward = victory ? 1 : 0;
+
+                    if (victory) {
+                        this.resources.energy += resourceReward;
+                        this.empire.victories++;
+                        this.empire.prestige += prestigeReward;
+                        this.addToBattleLog(`¡VICTORIA! Ganaste ${resourceReward} ⚡ y ${prestigeReward} prestigio`);
+                        this.showNotification(`¡Victoria! +${resourceReward} ⚡`, 'battle');
+                    } else {
+                        this.addToBattleLog('DERROTA. Tu flota fue destruida. Entrena más tropas.');
+                        this.showNotification('Derrota. Mejora tu flota', 'warning');
+                    }
+
+                    this.battle.inProgress = false;
+                    this.updateDisplay();
+                }, 2000);
+            }
+
+            addToBattleLog(message) {
+                const battleLog = document.getElementById('battleLog');
+                const messageDiv = document.createElement('div');
+                messageDiv.textContent = message;
+                battleLog.appendChild(messageDiv);
+                battleLog.scrollTop = battleLog.scrollHeight;
+            }
+
+            sendMessage() {
+                const input = document.getElementById('chatInput');
+                const message = input.value.trim();
+                
+                if (message) {
+                    const chatMessages = document.getElementById('chatMessages');
+                    const messageDiv = document.createElement('div');
+                    messageDiv.innerHTML = `<strong>Tú:</strong> ${message}`;
+                    chatMessages.appendChild(messageDiv);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    input.value = '';
+                }
+            }
+
+            handleClick(e) {
+                if (!this.isLoaded || this.currentTab !== 'empire') return;
+                
+                this.stats.totalClicks++;
+                
+                // Combo system
+                const now = Date.now();
+                if (now - this.combo.lastClick < 1000 / this.upgrades.comboSpeed) {
+                    this.combo.count++;
+                    if (this.combo.count > this.combo.multiplier * 10) {
+                        this.combo.multiplier = Math.floor(this.combo.count / 10) + 1;
+                        this.showCombo();
+                    }
+                } else {
+                    this.combo.count = 1;
+                    this.combo.multiplier = 1;
+                }
+                this.combo.lastClick = now;
+
+                // Calculate click value
+                const baseClick = this.upgrades.clickPower * this.combo.multiplier;
+                const clickValue = Math.floor(baseClick * this.upgrades.globalMultiplier * (1 + this.upgrades.spaceStation * 0.1));
+                
+                this.resources.energy += clickValue;
+                this.stats.resourcesMined += clickValue;
+
+                // Create effects
+                this.createFloatingNumber(e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, `+${clickValue}`);
+                this.createParticles(e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY);
+
+                // Check achievements
+                this.checkAchievements();
+                this.updateDisplay();
+            }
+
+            setupUpgradeButtons() {
+                // Infrastructure
+                document.getElementById('buy-miner').addEventListener('click', () => 
+                    this.buyGenerator('miners', 'energy', 10, 1));
+                document.getElementById('buy-quarry').addEventListener('click', () => 
+                    this.buyGenerator('quarries', 'energy', 50, 3));
+                document.getElementById('buy-crystal-farm').addEventListener('click', () => 
+                    this.buyGenerator('crystalFarms', 'energy', 200, 2));
+
+                // Technology
+                document.getElementById('upgrade-click').addEventListener('click', () => 
+                    this.buyUpgrade('clickPower', 'energy', 100, 1));
+                document.getElementById('upgrade-multiplier').addEventListener('click', () => 
+                    this.buyUpgrade('globalMultiplier', 'energy', 1000, 2));
+                document.getElementById('upgrade-combo').addEventListener('click', () => 
+                    this.buyUpgrade('comboSpeed', 'energy', 5000, 0.5));
+
+                // Advanced
+                document.getElementById('buy-plasma').addEventListener('click', () => 
+                    this.buyGenerator('plasmaExtractors', 'crystals', 1000, 2));
+                document.getElementById('buy-darkmatter').addEventListener('click', () => 
+                    this.buyGenerator('darkMatterCollectors', 'plasma', 500, 0.2));
+                document.getElementById('buy-quantum').addEventListener('click', () => 
+                    this.buyGenerator('quantumComputers', 'darkMatter', 100, 0.05));
+            }
+
+            buyGenerator(type, costResource, baseCost, rate) {
+                const cost = Math.floor(baseCost * Math.pow(1.15, this.generators[type]));
+                if (this.resources[costResource] >= cost) {
+                    this.resources[costResource] -= cost;
+                    this.generators[type]++;
+                    this.showNotification(`¡${type} mejorado! +${rate}/s`);
+                    this.updateDisplay();
+                }
+            }
+
+            buyUpgrade(type, costResource, baseCost, effect) {
+                const cost = baseCost * this.upgrades[type];
+                if (this.resources[costResource] >= cost) {
+                    this.resources[costResource] -= cost;
+                    
+                    if (type === 'globalMultiplier') {
+                        this.upgrades[type] *= effect;
+                    } else {
+                        this.upgrades[type] += effect;
+                    }
+                    
+                    this.showNotification(`¡${type} mejorado!`);
+                    this.updateDisplay();
+                }
+            }
+
+            generateResources() {
+                const multiplier = this.upgrades.globalMultiplier * (1 + this.upgrades.spaceStation * 0.1);
+                
+                // Basic generators
+                this.resources.energy += this.generators.miners * 1 * multiplier / 60;
+                this.resources.minerals += this.generators.quarries * 3 * multiplier / 60;
+                this.resources.crystals += this.generators.crystalFarms * 2 * multiplier / 60;
+                this.resources.plasma += this.generators.plasmaExtractors * 2 * multiplier / 60;
+                this.resources.darkMatter += this.generators.darkMatterCollectors * 0.2 * multiplier / 60;
+                this.resources.quantum += this.generators.quantumComputers * 0.05 * multiplier / 60;
+
+                // Empire updates
+                this.empire.fleetPower += this.upgrades.shipyard * 100 / 60;
+                this.empire.research += this.upgrades.laboratory * 5 / 60;
+                this.empire.infinity += this.upgrades.quantumPortal * 0.1 / 60;
+                
+                // Calculate total wealth
+                this.empire.totalWealth = Object.values(this.resources).reduce((sum, val) => sum + val, 0);
+
+                // Level up system
+                const newLevel = Math.floor(this.empire.prestige / 5) + 1;
+                if (newLevel > this.empire.level) {
+                    this.empire.level = newLevel;
+                    this.updatePlayerLevel();
+                }
+
+                // Check prestige
+                if (this.empire.totalWealth >= this.prestigeThreshold) {
+                    this.prestige();
+                }
+            }
+
+            updatePlayerLevel() {
+                const levels = [
+                    'Recruit', 'Cadet', 'Soldier', 'Veteran', 'Sergeant',
+                    'Lieutenant', 'Captain', 'Major', 'Colonel', 'General',
+                    'Commander', 'Admiral', 'Warlord', 'Emperor'
+                ];
+                
+                const levelName = levels[Math.min(this.empire.level - 1, levels.length - 1)] || 'Emperor';
+                document.getElementById('playerLevel').textContent = `Nivel ${this.empire.level} - ${levelName}`;
+            }
+
+            prestige() {
+                this.empire.prestige++;
+                this.empire.totalWealth = 0;
+                
+                // Reset resources but keep some based on prestige
+                Object.keys(this.resources).forEach(resource => {
+                    this.resources[resource] = Math.floor(this.resources[resource] * 0.1);
+                });
+                
+                this.showNotification(`¡PRESTIGIO ALCANZADO! +1 Prestigio`, 'achievement');
+                this.prestigeThreshold *= 10;
+                this.updatePlayerLevel();
+            }
+
+            createFloatingNumber(x, y, text) {
+                const floater = document.createElement('div');
+                floater.className = 'floating-number';
+                floater.textContent = text;
+                floater.style.left = x + 'px';
+                floater.style.top = y + 'px';
+                document.body.appendChild(floater);
+                
+                setTimeout(() => floater.remove(), 2500);
+            }
+
+            createParticles(x, y) {
+                for (let i = 0; i < 12; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = x + 'px';
+                    particle.style.top = y + 'px';
+                    
+                    const angle = (i / 12) * Math.PI * 2;
+                    const distance = 60 + Math.random() * 80;
+                    particle.style.setProperty('--dx', Math.cos(angle) * distance + 'px');
+                    particle.style.setProperty('--dy', Math.sin(angle) * distance + 'px');
+                    
+                    document.body.appendChild(particle);
+                    setTimeout(() => particle.remove(), 4000);
+                }
+            }
+
+            showCombo() {
+                const indicator = document.getElementById('comboIndicator');
+                const multiplier = document.getElementById('comboMultiplier');
+                multiplier.textContent = this.combo.multiplier;
+                
+                indicator.classList.add('show');
+                setTimeout(() => indicator.classList.remove('show'), 1500);
+            }
+
+            showNotification(text, type = 'success') {
+                const container = document.getElementById('notificationContainer');
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.textContent = text;
+                
+                container.appendChild(notification);
+                
+                setTimeout(() => notification.classList.add('show'), 100);
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => notification.remove(), 500);
+                }, 3000);
+            }
+
+            checkAchievements() {
+                const newAchievements = [];
+                
+                if (this.stats.totalClicks >= 1000 && !this.stats.achievements.has('clicker1000')) {
+                    newAchievements.push({ id: 'clicker1000', text: '¡Maestro Clickeador! - 1,000 clics' });
+                }
+                if (this.empire.totalWealth >= 1000000 && !this.stats.achievements.has('wealth1m')) {
+                    newAchievements.push({ id: 'wealth1m', text: '¡Millonario Galáctico! - 1M riqueza' });
+                }
+                if (this.combo.multiplier >= 50 && !this.stats.achievements.has('combo50')) {
+                    newAchievements.push({ id: 'combo50', text: '¡Combo Extremo! - x50 combo' });
+                }
+                if (this.empire.prestige >= 1 && !this.stats.achievements.has('prestige1')) {
+                    newAchievements.push({ id: 'prestige1', text: '¡Primer Prestigio! - Reinicio exitoso' });
+                }
+                if (this.empire.victories >= 10 && !this.stats.achievements.has('victories10')) {
+                    newAchievements.push({ id: 'victories10', text: '¡Guerrero Espacial! - 10 victorias' });
+                }
+                
+                newAchievements.forEach(achievement => {
+                    this.stats.achievements.add(achievement.id);
+                    this.showNotification(achievement.text, 'achievement');
+                });
+            }
+
+            updateDisplay() {
+                // Update resources
+                Object.keys(this.resources).forEach(resource => {
+                    const element = document.getElementById(resource);
+                    if (element) {
+                        element.textContent = this.formatNumber(this.resources[resource]);
+                    }
+                });
+
+                // Update rates
+                const rates = {
+                    energy: this.generators.miners * 1 * this.upgrades.globalMultiplier * (1 + this.upgrades.spaceStation * 0.1),
+                    minerals: this.generators.quarries * 3 * this.upgrades.globalMultiplier * (1 + this.upgrades.spaceStation * 0.1),
+                    crystals: this.generators.crystalFarms * 2 * this.upgrades.globalMultiplier * (1 + this.upgrades.spaceStation * 0.1),
+                    plasma: this.generators.plasmaExtractors * 2 * this.upgrades.globalMultiplier * (1 + this.upgrades.spaceStation * 0.1),
+                    darkMatter: this.generators.darkMatterCollectors * 0.2 * this.upgrades.globalMultiplier * (1 + this.upgrades.spaceStation * 0.1),
+                    quantum: this.generators.quantumComputers * 0.05 * this.upgrades.globalMultiplier * (1 + this.upgrades.spaceStation * 0.1)
+                };
+
+                Object.keys(rates).forEach(resource => {
+                    const element = document.getElementById(resource + '-rate');
+                    if (element) {
+                        element.textContent = this.formatNumber(rates[resource]) + '/s';
+                    }
+                });
+
+                // Update empire stats
+                document.getElementById('totalWealth').textContent = this.formatNumber(this.empire.totalWealth);
+                document.getElementById('population').textContent = this.formatNumber(this.empire.population);
+                document.getElementById('fleetPower').textContent = this.formatNumber(this.empire.fleetPower);
+                document.getElementById('research').textContent = this.formatNumber(this.empire.research);
+                document.getElementById('prestige').textContent = this.empire.prestige;
+                document.getElementById('infinity').textContent = this.formatNumber(this.empire.infinity);
+
+                // Update fleet display
+                Object.keys(this.fleet).forEach(unit => {
+                    const element = document.getElementById(unit + '-count');
+                    if (element) {
+                        element.textContent = this.fleet[unit];
+                    }
+                });
+
+                // Update click power
+                const clickValue = this.upgrades.clickPower * this.upgrades.globalMultiplier * (1 + this.upgrades.spaceStation * 0.1);
+                document.getElementById('clickPower').textContent = `+${clickValue}`;
+
+                // Update battle display
+                document.getElementById('playerFleetPower').textContent = this.formatNumber(this.empire.fleetPower);
+                document.getElementById('enemyFleetPower').textContent = this.battle.inProgress ? this.formatNumber(this.battle.enemyPower) : '???';
+                document.getElementById('battleRewards').textContent = this.formatNumber(this.battle.rewards);
+
+                // Update upgrade costs and states
+                this.updateUpgradeDisplay();
+
+                // Update ranking
+                document.getElementById('playerRankingPower').textContent = this.formatNumber(this.empire.fleetPower);
+                document.getElementById('playerVictories').textContent = this.empire.victories;
+                document.getElementById('playerRankingPrestige').textContent = this.empire.prestige;
+            }
+
+            updateUpgradeDisplay() {
+                // Update costs
+                document.getElementById('miner-cost').textContent = Math.floor(10 * Math.pow(1.15, this.generators.miners));
+                document.getElementById('quarry-cost').textContent = Math.floor(50 * Math.pow(1.15, this.generators.quarries));
+                document.getElementById('crystal-cost').textContent = Math.floor(200 * Math.pow(1.15, this.generators.crystalFarms));
+                document.getElementById('plasma-cost').textContent = Math.floor(1000 * Math.pow(1.15, this.generators.plasmaExtractors));
+                document.getElementById('darkmatter-cost').textContent = Math.floor(500 * Math.pow(1.15, this.generators.darkMatterCollectors));
+                document.getElementById('quantum-cost').textContent = Math.floor(100 * Math.pow(1.15, this.generators.quantumComputers));
+
+                document.getElementById('click-cost').textContent = 100 * this.upgrades.clickPower;
+                document.getElementById('multiplier-cost').textContent = 1000 * this.upgrades.globalMultiplier;
+                document.getElementById('combo-cost').textContent = 5000 * this.upgrades.comboSpeed;
+
+                // Update button states
+                this.updateButtonStates();
+            }
+
+            updateButtonStates() {
+                // Check if player can afford upgrades
+                const upgrades = [
+                    { id: 'buy-miner', cost: Math.floor(10 * Math.pow(1.15, this.generators.miners)), resource: 'energy' },
+                    { id: 'buy-quarry', cost: Math.floor(50 * Math.pow(1.15, this.generators.quarries)), resource: 'energy' },
+                    { id: 'buy-crystal-farm', cost: Math.floor(200 * Math.pow(1.15, this.generators.crystalFarms)), resource: 'energy' },
+                    { id: 'buy-plasma', cost: Math.floor(1000 * Math.pow(1.15, this.generators.plasmaExtractors)), resource: 'crystals' },
+                    { id: 'buy-darkmatter', cost: Math.floor(500 * Math.pow(1.15, this.generators.darkMatterCollectors)), resource: 'plasma' },
+                    { id: 'buy-quantum', cost: Math.floor(100 * Math.pow(1.15, this.generators.quantumComputers)), resource: 'darkMatter' },
+                    { id: 'upgrade-click', cost: 100 * this.upgrades.clickPower, resource: 'energy' },
+                    { id: 'upgrade-multiplier', cost: 1000 * this.upgrades.globalMultiplier, resource: 'energy' },
+                    { id: 'upgrade-combo', cost: 5000 * this.upgrades.comboSpeed, resource: 'energy' }
+                ];
+
+                upgrades.forEach(upgrade => {
+                    const button = document.getElementById(upgrade.id);
+                    if (button) {
+                        const canAfford = this.resources[upgrade.resource] >= upgrade.cost;
+                        button.disabled = !canAfford;
+                        button.style.opacity = canAfford ? '1' : '0.5';
+                    }
+                });
+            }
+
+            formatNumber(num) {
+                if (num >= 1e15) return (num / 1e15).toFixed(2) + 'Q';
+                if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
+                if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+                if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+                if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+                return Math.floor(num).toString();
+            }
+
+            startGameLoop() {
+                setInterval(() => {
+                    const now = Date.now();
+                    const deltaTime = (now - this.lastUpdate) / 1000;
+                    this.lastUpdate = now;
+                    
+                    this.stats.playTime += deltaTime;
+                    this.generateResources();
+                    
+                    if (this.combo.count > this.stats.bestCombo) {
+                        this.stats.bestCombo = this.combo.count;
+                    }
+                    
+                    this.updateDisplay();
+                    this.saveGame();
+                }, 1000 / 60); // 60 FPS
+            }
+
+            saveGame() {
+                if (!this.currentUser) return;
+                
+                const saveData = {
+                    resources: this.resources,
+                    generators: this.generators,
+                    upgrades: this.upgrades,
+                    fleet: this.fleet,
+                    empire: this.empire,
+                    stats: {
+                        totalClicks: this.stats.totalClicks,
+                        bestCombo: this.stats.bestCombo,
+                        resourcesMined: this.stats.resourcesMined,
+                        playTime: this.stats.playTime,
+                        achievements: Array.from(this.stats.achievements)
+                    },
+                    lastSave: Date.now()
+                };
+                
+                localStorage.setItem(`galacticEmpire_${this.currentUser}`, JSON.stringify(saveData));
+            }
+
+            loadGame() {
+                if (!this.currentUser) return;
+                
+                const saveData = localStorage.getItem(`galacticEmpire_${this.currentUser}`);
+                if (saveData) {
+                    const data = JSON.parse(saveData);
+                    
+                    // Merge saved data with defaults
+                    Object.assign(this.resources, data.resources || {});
+                    Object.assign(this.generators, data.generators || {});
+                    Object.assign(this.upgrades, data.upgrades || {});
+                    Object.assign(this.fleet, data.fleet || {});
+                    Object.assign(this.empire, data.empire || {});
+                    
+                    if (data.stats) {
+                        Object.assign(this.stats, {
+                            totalClicks: data.stats.totalClicks || 0,
+                            bestCombo: data.stats.bestCombo || 0,
+                            resourcesMined: data.stats.resourcesMined || 0,
+                            playTime: data.stats.playTime || 0,
+                            achievements: new Set(data.stats.achievements || [])
+                        });
+                    }
+                    
+                    this.updateFleetPower();
+                    this.updatePlayerLevel();
+                }
+            }
+
+            hideLoadingScreen() {
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').classList.add('hidden');
+                    this.isLoaded = true;
+                }, 3000);
+            }
+        }
+
+        // Initialize the game when the page loads
+        window.addEventListener('load', () => {
+            new GalacticEmpireMMO();
+        });
+
+        // Prevent zoom on double tap for iPad
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+    </script>
+</body>
+</html>
